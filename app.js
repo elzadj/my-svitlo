@@ -150,6 +150,17 @@ const I18N = (() => {
       btn.classList.toggle('lang-btn--active', isActive);
       btn.setAttribute('aria-pressed', String(isActive));
     });
+    // Append dd.mm.yyyy dates to today/tomorrow tab buttons
+    const _fmt = (d) =>
+      `${String(d.getDate()).padStart(2,'0')}.${String(d.getMonth()+1).padStart(2,'0')}.${d.getFullYear()}`;
+    const _today    = new Date();
+    const _tomorrow = new Date(_today.getTime() + 86400000);
+    document.querySelectorAll('[data-day="today"]').forEach(btn => {
+      btn.textContent += '\u00a0' + _fmt(_today);
+    });
+    document.querySelectorAll('[data-day="tomorrow"]').forEach(btn => {
+      btn.textContent += '\u00a0' + _fmt(_tomorrow);
+    });
   }
 
   function setLang(lang) {

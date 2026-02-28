@@ -343,6 +343,7 @@ body.loading .main-layout {
 .tab-group {
   display: flex;
   gap: 3px;
+  flex-wrap: wrap;
 }
 
 .tab-btn {
