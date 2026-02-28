@@ -387,11 +387,17 @@ body.loading .main-layout { opacity: 0.4; pointer-events: none; }
   font-size: var(--font-size-xs);
 }
 
-/* On screens where sections are stacked and viewport <900px,
-   enforce a minimum so cells don't become unreadably thin */
+/* On stacked/mobile layouts, rotate hour headers vertically so
+   narrow cells can fit without forcing horizontal scroll.
+   table-layout:fixed distributes width; height absorbs text length. */
 @media (max-width: 899px) {
-  .overview-table {
-    min-width: 620px;
+  .overview-table thead th:not(.col-group) {
+    writing-mode: vertical-lr;
+    white-space: nowrap;
+    height: 58px;
+    padding: 4px 1px;
+    vertical-align: bottom;
+    font-size: 0.65rem;
   }
 }
 
@@ -443,6 +449,14 @@ body.loading .main-layout { opacity: 0.4; pointer-events: none; }
   background: var(--color-current-bg) !important;
   border-top: 3px solid var(--color-current);
   border-bottom-color: var(--color-current);
+}
+/* With vertical text the accent border should be on the left (inline-start) */
+@media (max-width: 899px) {
+  .overview-table th.col-current {
+    border-top: none;
+    border-left: 3px solid var(--color-current);
+    border-bottom-color: var(--color-border);
+  }
 }
 .overview-table td.col-current { background: var(--color-current-bg); }
 
@@ -572,9 +586,6 @@ body.loading .main-layout { opacity: 0.4; pointer-events: none; }
   .section-title { font-size: var(--font-size-sm); }
 
   .tab-btn { padding: 3px 7px; font-size: 0.65rem; }
-
-  /* Single column timeline on mobile */
-  .timeline { display: flex; flex-direction: column; }
 
   :root { --cell-height: 30px; }
 }
