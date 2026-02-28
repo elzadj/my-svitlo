@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title data-i18n="meta.title">Графік відключень — Київська область</title>
+  <meta name="description" data-i18n-attr="content" data-i18n="meta.description" content="Графік відключень світла по Київській області" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body class="loading">
+
+  <!-- Header / Meta Bar -->
+  <header class="meta-bar" role="banner">
+    <div class="meta-bar__inner">
+      <div class="meta-bar__title">
+        <span class="meta-bar__icon" aria-hidden="true">⚡</span>
+        <span data-i18n="header.title">Графік відключень</span>
+        <span class="meta-bar__region" data-i18n="header.region">Київська обл.</span>
+      </div>
+      <div class="meta-bar__info">
+        <span class="meta-bar__updated">
+          <span data-i18n="header.updated">Оновлено:</span>
+          <span id="last-updated-time">—</span>
+        </span>
+        <span class="meta-bar__countdown">
+          <span data-i18n="header.refresh">Оновлення:</span>
+          <span id="countdown-display">5:00</span>
+        </span>
+        <button id="btn-theme" class="theme-btn" aria-label="Toggle theme" title="Toggle light/dark theme">🌙</button>
+        <div class="lang-switcher" role="group" aria-label="Language / Мова">
+          <button id="btn-lang-uk" class="lang-btn lang-btn--active" aria-pressed="true" data-lang="uk">УКР</button>
+          <button id="btn-lang-en" class="lang-btn" aria-pressed="false" data-lang="en">ENG</button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Error Banner -->
+  <div id="error-banner" class="error-banner" role="alert" aria-live="polite" hidden>
+    <span class="error-banner__icon" aria-hidden="true">⚠</span>
+    <span id="error-message" data-i18n="error.fetchFailed">Не вдалося завантажити дані. Показано останні відомі дані.</span>
+  </div>
+
+  <!-- Main content -->
+  <main class="main-layout" role="main">
+
+    <!-- Group 3.2 Featured Section -->
+    <section class="group-section" aria-labelledby="group-section-heading">
+      <div class="section-header">
+        <h2 id="group-section-heading" class="section-title">
+          <span data-i18n="section.group">Черга</span>
+          <span id="group-name-display">3.2</span>
+        </h2>
+        <div class="tab-row">
+          <div class="tab-group" role="tablist" aria-label="Тип даних / Data type" data-section="group">
+            <button class="tab-btn tab-btn--active" role="tab" aria-selected="true"
+                    data-section="group" data-type="fact" data-i18n="tabs.actual">Фактичний</button>
+            <button class="tab-btn" role="tab" aria-selected="false"
+                    data-section="group" data-type="preset" data-i18n="tabs.predicted">Прогноз</button>
+          </div>
+          <div class="tab-group tab-group--day" role="tablist" aria-label="День / Day" data-section="group">
+            <button class="tab-btn tab-btn--active" role="tab" aria-selected="true"
+                    data-section="group" data-day="today" data-i18n="tabs.today">Сьогодні</button>
+            <button class="tab-btn tab-btn--tomorrow" role="tab" aria-selected="false"
+                    data-section="group" data-day="tomorrow" data-i18n="tabs.tomorrow">Завтра</button>
+          </div>
+        </div>
+      </div>
+      <!-- Timeline list -->
+      <ul id="group-timeline" class="timeline" aria-label="Розклад по годинах" role="list">
+        <!-- Rendered by JS -->
+      </ul>
+    </section>
+
+    <!-- Overview Section -->
+    <section class="overview-section" aria-labelledby="overview-section-heading">
+      <div class="section-header">
+        <h2 id="overview-section-heading" class="section-title" data-i18n="section.overview">Огляд усіх черг</h2>
+        <div class="tab-row">
+          <div class="tab-group" role="tablist" aria-label="Тип даних / Data type" data-section="overview">
+            <button class="tab-btn tab-btn--active" role="tab" aria-selected="true"
+                    data-section="overview" data-type="fact" data-i18n="tabs.actual">Фактичний</button>
+            <button class="tab-btn" role="tab" aria-selected="false"
+                    data-section="overview" data-type="preset" data-i18n="tabs.predicted">Прогноз</button>
+          </div>
+          <div class="tab-group tab-group--day" role="tablist" aria-label="День / Day" data-section="overview">
+            <button class="tab-btn tab-btn--active" role="tab" aria-selected="true"
+                    data-section="overview" data-day="today" data-i18n="tabs.today">Сьогодні</button>
+            <button class="tab-btn tab-btn--tomorrow" role="tab" aria-selected="false"
+                    data-section="overview" data-day="tomorrow" data-i18n="tabs.tomorrow">Завтра</button>
+          </div>
+        </div>
+      </div>
+      <!-- Scrollable table wrapper -->
+      <div class="overview-table-wrapper" role="region" aria-label="Таблиця всіх черг" tabindex="0">
+        <table id="overview-table" class="overview-table" aria-label="Графік відключень усіх груп">
+          <thead id="overview-thead">
+            <!-- Rendered by JS -->
+          </thead>
+          <tbody id="overview-tbody">
+            <!-- Rendered by JS -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="site-footer" role="contentinfo">
+    <p>
+      <span data-i18n="footer.source">Джерело даних:</span>
+      <a href="https://github.com/Baskerville42/outage-data-ua" target="_blank" rel="noopener noreferrer">
+        outage-data-ua
+      </a>
+    </p>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
