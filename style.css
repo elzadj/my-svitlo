@@ -380,7 +380,9 @@ body.loading .main-layout {
 .timeline {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
 }
 
 .timeline__item {
@@ -389,13 +391,16 @@ body.loading .main-layout {
   align-items: center;
   gap: 7px;
   padding: 4px 6px;
-  border-radius: var(--radius-sm);
-  border: 1px solid transparent;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.timeline__item:last-child {
+  border-bottom: none;
 }
 
 .timeline__item--current {
-  border-color: var(--color-current);
   background: var(--color-current-bg);
+  box-shadow: inset 3px 0 0 var(--color-current);
 }
 
 .timeline__time {
@@ -735,11 +740,20 @@ body.loading .main-layout {
     overflow-y: visible;
   }
 
-  /* Two-column timeline on stacked view to save vertical space */
+  /* Two-column timeline: hours 1–12 left, 13–24 right */
   .timeline {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 2px;
+    grid-auto-flow: column;
+    grid-template-rows: repeat(12, auto);
+  }
+  /* Divider between the two columns */
+  .timeline__item:nth-child(-n+12) {
+    border-right: 1px solid var(--color-border);
+  }
+  /* Item 12 is the last row of column 1 — no bottom border */
+  .timeline__item:nth-child(12) {
+    border-bottom: none;
   }
 
   .overview-section {
@@ -749,6 +763,11 @@ body.loading .main-layout {
 
 /* ── Tablet portrait (600px – 899px) ── */
 @media (max-width: 899px) {
+  /* Narrower group-name column — values are max 3 chars ("6.2") */
+  :root { --col-group-width: 42px; }
+  .overview-table th.col-group,
+  .overview-table td.col-group { padding-left: 4px; padding-right: 4px; }
+
   .meta-bar {
     height: auto;
     padding: 6px 0;
