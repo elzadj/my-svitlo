@@ -18,7 +18,9 @@ const CONFIG = {
   MONITOR_URL: './monitor.json',
   MONITOR_POLL: 30,   // seconds — browser polls every 30 s (file is tiny, no rate limit)
   MONITOR_CHECKS: [
-    { slug: 'svitlobot-hata', uk: 'Квартира', en: 'Apartment' },
+    { slug: 'svitlobot-hata',   uk: 'Квартира',          en: 'Apartment'          },
+    { slug: 'svitlobot-poverkh', uk: 'Комора поверх',    en: 'Storage floor'      },
+    { slug: 'svitlobot-pidval',  uk: 'Комора Д10 підвал', en: 'Storage D10 basement' },
   ],
 };
 
@@ -317,14 +319,18 @@ const MonitorService = (() => {
       const resp = await fetch(`${CONFIG.MONITOR_URL}?t=${Date.now()}`, { cache: 'no-store' });
       if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
       const data = await resp.json();
+      const KNOWN_STATUSES = new Set(['up', 'down', 'grace', 'unknown']);
       const bySlug = {};
       for (const c of (data.checks ?? [])) bySlug[c.slug] = c.status;
-      STATE.monitor.checks = CONFIG.MONITOR_CHECKS.map(cfg => ({
-        slug:   cfg.slug,
-        uk:     cfg.uk,
-        en:     cfg.en,
-        status: bySlug[cfg.slug] ?? 'unknown',
-      }));
+      STATE.monitor.checks = CONFIG.MONITOR_CHECKS.map(cfg => {
+        const raw = bySlug[cfg.slug] ?? 'unknown';
+        return {
+          slug:   cfg.slug,
+          uk:     cfg.uk,
+          en:     cfg.en,
+          status: KNOWN_STATUSES.has(raw) ? raw : 'unknown',
+        };
+      });
       STATE.monitor.fetchError = false;
     } catch (err) {
       console.warn('[svitlobot] Monitor fetch failed:', err);
