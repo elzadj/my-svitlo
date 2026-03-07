@@ -15,6 +15,11 @@ const CONFIG = {
     'GPV5.1','GPV5.2',
     'GPV6.1','GPV6.2',
   ],
+  MONITOR_URL: './monitor.json',
+  MONITOR_POLL: 30,   // seconds — browser polls every 30 s (file is tiny, no rate limit)
+  MONITOR_CHECKS: [
+    { slug: 'svitlobot-hata', uk: 'Квартира', en: 'Apartment' },
+  ],
 };
 
 /* ============================================================
@@ -31,6 +36,7 @@ const STATE = {
   lastFetchTime: null,
   group:    { dataType: 'fact', day: 'today' },
   overview: { dataType: 'fact', day: 'today' },
+  monitor:  { checks: [], fetchError: false },
 };
 
 /* ============================================================
@@ -52,6 +58,7 @@ const I18N = (() => {
       section: {
         group: 'Черга',
         overview: 'Огляд усіх черг',
+        monitor: 'Моніторинг',
       },
       tabs: {
         actual: 'Фактичний',
@@ -70,6 +77,12 @@ const I18N = (() => {
       },
       error: {
         fetchFailed: 'Не вдалося завантажити дані. Показано останні відомі дані.',
+      },
+      monitor: {
+        up:      'Є світло',
+        down:    'Немає світла',
+        grace:   'Перевіряємо...',
+        unknown: 'Невідомо',
       },
       footer: {
         source: 'Джерело даних:',
@@ -94,6 +107,7 @@ const I18N = (() => {
       section: {
         group: 'Group',
         overview: 'All Groups Overview',
+        monitor: 'Live monitoring',
       },
       tabs: {
         actual: 'Actual',
@@ -112,6 +126,12 @@ const I18N = (() => {
       },
       error: {
         fetchFailed: 'Failed to load data. Showing last known data.',
+      },
+      monitor: {
+        up:      'Power on',
+        down:    'Power out',
+        grace:   'Checking...',
+        unknown: 'Unknown',
       },
       footer: {
         source: 'Data source:',
@@ -185,7 +205,7 @@ const I18N = (() => {
    ============================================================ */
 const DataService = (() => {
   async function fetchData() {
-    const resp = await fetch(CONFIG.DATA_URL, { cache: 'no-store' });
+    const resp = await fetch(`${CONFIG.DATA_URL}?t=${Date.now()}`, { cache: 'no-store' });
     if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
     return resp.json();
   }
@@ -286,6 +306,33 @@ const DataService = (() => {
     getShortGroupName,
     processRaw,
   };
+})();
+
+/* ============================================================
+   MONITOR SERVICE
+   ============================================================ */
+const MonitorService = (() => {
+  async function fetchMonitor() {
+    try {
+      const resp = await fetch(`${CONFIG.MONITOR_URL}?t=${Date.now()}`, { cache: 'no-store' });
+      if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+      const data = await resp.json();
+      const bySlug = {};
+      for (const c of (data.checks ?? [])) bySlug[c.slug] = c.status;
+      STATE.monitor.checks = CONFIG.MONITOR_CHECKS.map(cfg => ({
+        slug:   cfg.slug,
+        uk:     cfg.uk,
+        en:     cfg.en,
+        status: bySlug[cfg.slug] ?? 'unknown',
+      }));
+      STATE.monitor.fetchError = false;
+    } catch (err) {
+      console.warn('[svitlobot] Monitor fetch failed:', err);
+      STATE.monitor.fetchError = true;
+    }
+  }
+
+  return { fetchMonitor };
 })();
 
 /* ============================================================
@@ -537,9 +584,59 @@ const Renderer = (() => {
     renderOverviewTable();
     updateMetaBar();
     updateErrorBanner();
+    // MonitorRenderer is defined after this IIFE, so access via global
+    if (typeof MonitorRenderer !== 'undefined') MonitorRenderer.renderMonitorGrid();
   }
 
   return { renderAll, updateMetaBar, updateErrorBanner, renderGroupSection, renderOverviewTable };
+})();
+
+/* ============================================================
+   MONITOR RENDERER
+   ============================================================ */
+const MonitorRenderer = (() => {
+  function renderMonitorGrid() {
+    const section = document.getElementById('monitor-section');
+    const grid    = document.getElementById('monitor-grid');
+    if (!section || !grid) return;
+
+    const checks = STATE.monitor.checks;
+    if (checks.length === 0 || STATE.monitor.fetchError) {
+      section.hidden = true;
+      document.body.removeAttribute('data-monitor-status');
+      return;
+    }
+
+    // Body border reflects the first (apartment) check status
+    document.body.dataset.monitorStatus = checks[0].status;
+
+    section.hidden = false;
+    grid.innerHTML = '';
+
+    for (const check of checks) {
+      const name   = STATE.lang === 'uk' ? check.uk : check.en;
+      const status = check.status;
+      const label  = I18N.t(`monitor.${status}`);
+
+      const card = document.createElement('div');
+      card.className = `monitor-card monitor-card--${status}`;
+      card.setAttribute('role', 'listitem');
+      card.setAttribute('aria-label', `${name}: ${label}`);
+
+      const nameEl = document.createElement('span');
+      nameEl.className = 'monitor-card__name';
+      nameEl.textContent = name;
+
+      const statusEl = document.createElement('span');
+      statusEl.className = 'monitor-card__status';
+      statusEl.textContent = label;
+
+      card.append(nameEl, statusEl);
+      grid.appendChild(card);
+    }
+  }
+
+  return { renderMonitorGrid };
 })();
 
 /* ============================================================
@@ -629,6 +726,7 @@ const CountdownTimer = (() => {
     if (displayEl) displayEl.textContent = _formatTime(STATE.countdown);
 
     if (STATE.countdown <= 0) {
+      STATE.countdown = CONFIG.POLL_INTERVAL; // prevent re-entry while refresh is in flight
       App.refresh();
     }
   }
@@ -761,6 +859,12 @@ const App = (() => {
 
     CountdownTimer.reset();
     CountdownTimer.start();
+
+    // Monitor polling (independent of main data countdown)
+    MonitorService.fetchMonitor().then(MonitorRenderer.renderMonitorGrid);
+    setInterval(() => {
+      MonitorService.fetchMonitor().then(MonitorRenderer.renderMonitorGrid);
+    }, CONFIG.MONITOR_POLL * 1000);
   }
 
   return { init, refresh };

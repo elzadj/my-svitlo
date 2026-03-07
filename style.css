@@ -101,8 +101,13 @@ body {
   min-height: 100dvh;
   display: flex;
   flex-direction: column;
-  transition: background-color 0.2s, color 0.2s;
+  transition: background-color 0.2s, color 0.2s, border-color 0.6s;
+  border: 5px solid transparent;
 }
+
+body[data-monitor-status="up"]    { border-color: var(--color-yes); }
+body[data-monitor-status="down"]  { border-color: var(--color-no); }
+body[data-monitor-status="grace"] { border-color: var(--color-maybe); }
 
 a {
   color: var(--color-accent);
@@ -272,17 +277,23 @@ body.loading .main-layout {
 }
 
 /* ============================================================
-   Main Layout
+   Main Layout — CSS Grid on desktop, flex column on mobile
+   Columns: [220px sidebar] [1fr content]
+   Rows:    [auto monitor ] [1fr  overview]
    ============================================================ */
 .main-layout {
-  display: flex;
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  grid-template-rows: auto 1fr;
+  grid-template-areas:
+    "sidebar monitor"
+    "sidebar overview";
   gap: var(--section-gap);
   flex: 1;
   max-width: 1700px;
   width: 100%;
   margin: 0 auto;
   padding: 16px;
-  align-items: flex-start;
   transition: opacity 0.2s;
 }
 
@@ -290,6 +301,7 @@ body.loading .main-layout {
    Sections
    ============================================================ */
 .group-section,
+.monitor-section,
 .overview-section {
   background: var(--color-surface);
   border: 1px solid var(--color-border);
@@ -301,9 +313,10 @@ body.loading .main-layout {
   transition: background-color 0.2s, border-color 0.2s;
 }
 
-/* Narrow fixed sidebar */
+/* Sticky sidebar — spans both grid rows */
 .group-section {
-  flex: 0 0 220px;
+  grid-area: sidebar;
+  align-self: start;
   min-width: 0;
   position: sticky;
   top: calc(var(--header-height) + 16px);
@@ -311,8 +324,12 @@ body.loading .main-layout {
   overflow-y: auto;
 }
 
+.monitor-section {
+  grid-area: monitor;
+}
+
 .overview-section {
-  flex: 1;
+  grid-area: overview;
   min-width: 0;
   overflow: hidden;
 }
@@ -685,6 +702,42 @@ body.loading .main-layout {
 }
 
 /* ============================================================
+   Monitor Section
+   ============================================================ */
+.monitor-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.monitor-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 18px;
+  border-radius: var(--radius-md);
+  min-width: 120px;
+  gap: 2px;
+}
+
+.monitor-card__name {
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.monitor-card__status {
+  font-size: var(--font-size-xs);
+  opacity: 0.85;
+}
+
+/* Status colors — reuse existing palette */
+.monitor-card--up      { background: rgba(34, 197, 94, 0.18);  color: var(--color-yes); border: 1px solid var(--color-yes); }
+.monitor-card--down    { background: rgba(239, 68, 68, 0.18);  color: var(--color-no);  border: 1px solid var(--color-no); }
+.monitor-card--grace   { background: rgba(245, 158, 11, 0.18); color: var(--color-maybe); border: 1px solid var(--color-maybe); }
+.monitor-card--unknown { background: var(--color-surface);     color: var(--color-text-muted); border: 1px solid var(--color-border); }
+
+/* ============================================================
    Footer
    ============================================================ */
 .site-footer {
@@ -727,13 +780,17 @@ body.loading .main-layout {
    ── */
 @media (max-width: 1199px) {
   .main-layout {
+    display: flex;
     flex-direction: column;
     padding: 12px;
     gap: 14px;
   }
 
+  /* Monitor floats to top on stacked layout */
+  .monitor-section { order: -1; }
+
   .group-section {
-    flex: none;
+    order: 0;
     width: 100%;
     position: static;
     max-height: none;
