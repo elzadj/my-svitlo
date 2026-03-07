@@ -1,0 +1,37 @@
+name: Update monitor data
+on:
+  schedule:
+    - cron: '*/5 * * * *'
+  workflow_dispatch:  # allow manual trigger for testing
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Fetch healthchecks.io status
+        env:
+          HC_KEY: ${{ secrets.HC_READONLY_KEY }}
+        run: |
+          curl -sf -H "X-Api-Key: $HC_KEY" \
+            https://healthchecks.io/api/v3/checks/ > /tmp/hc_raw.json
+          python3 - << 'EOF'
+          import json, time
+          with open('/tmp/hc_raw.json') as f:
+              data = json.load(f)
+          checks = [{'slug': c['slug'], 'status': c['status']}
+                    for c in data.get('checks', [])]
+          out = {'updated': int(time.time()), 'checks': checks}
+          with open('monitor.json', 'w') as f:
+              json.dump(out, f)
+          EOF
+
+      - name: Commit and push
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add monitor.json
+          git diff --staged --quiet || \
+            git commit -m "chore: update monitor data [skip ci]"
+          git push
