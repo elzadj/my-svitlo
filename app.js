@@ -15,7 +15,7 @@ const CONFIG = {
     'GPV5.1','GPV5.2',
     'GPV6.1','GPV6.2',
   ],
-  MONITOR_URL: './monitor.json',
+  MONITOR_URL: 'https://raw.githubusercontent.com/elzadj/my-svitlo/refs/heads/main/monitor.json',
   MONITOR_POLL: 30,   // seconds — browser polls every 30 s (file is tiny, no rate limit)
   MONITOR_CHECKS: [
     { slug: 'svitlobot-hata',   uk: 'Квартира',          en: 'Apartment'          },
