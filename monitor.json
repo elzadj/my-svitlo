@@ -1,1 +1,1 @@
-{"updated": 1782753820, "checks": [{"slug": "svitlobot-pidval", "status": "grace"}, {"slug": "svitlobot-poverkh", "status": "grace"}, {"slug": "svitlobot-hata", "status": "grace"}]}
+{"updated": 1782756902, "checks": [{"slug": "svitlobot-pidval", "status": "down"}, {"slug": "svitlobot-poverkh", "status": "down"}, {"slug": "svitlobot-hata", "status": "down"}]}
