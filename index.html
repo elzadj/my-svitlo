@@ -1,135 +1,347 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="uk">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title data-i18n="meta.title">Графік відключень — Київська область</title>
-  <meta name="description" data-i18n-attr="content" data-i18n="meta.description" content="Графік відключень світла по Київській області" />
-  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png" />
-  <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png" />
-  <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png" />
-  <link rel="manifest" href="site.webmanifest" />
-  <meta name="theme-color" content="#0f172a" />
-  <meta name="msapplication-TileColor" content="#0f172a" />
-  <meta name="msapplication-TileImage" content="mstile-144x144.png" />
-  <meta name="msapplication-config" content="browserconfig.xml" />
-  <link rel="stylesheet" href="style.css" />
-</head>
-<body class="loading">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title data-i18n="meta.title">
+            Графік відключень — Київська область
+        </title>
+        <meta
+            name="description"
+            data-i18n-attr="content"
+            data-i18n="meta.description"
+            content="Графік відключень світла по Київській області"
+        />
+        <link
+            rel="icon"
+            type="image/png"
+            sizes="32x32"
+            href="favicon-32x32.png"
+        />
+        <link
+            rel="icon"
+            type="image/png"
+            sizes="16x16"
+            href="favicon-16x16.png"
+        />
+        <link
+            rel="apple-touch-icon"
+            sizes="180x180"
+            href="apple-touch-icon.png"
+        />
+        <link rel="manifest" href="site.webmanifest" />
+        <meta name="theme-color" content="#0f172a" />
+        <meta name="msapplication-TileColor" content="#0f172a" />
+        <meta name="msapplication-TileImage" content="mstile-144x144.png" />
+        <meta name="msapplication-config" content="browserconfig.xml" />
+        <link rel="stylesheet" href="style.css" />
+    </head>
+    <body class="loading">
+        <!-- Header / Meta Bar -->
+        <header class="meta-bar" role="banner">
+            <div class="meta-bar__inner">
+                <div class="meta-bar__title">
+                    <span class="meta-bar__icon" aria-hidden="true">⚡</span>
+                    <span data-i18n="header.title">Графік відключень</span>
+                    <span class="meta-bar__region" data-i18n="header.region"
+                        >Київська обл.</span
+                    >
+                </div>
+                <div class="meta-bar__info">
+                    <span class="meta-bar__updated">
+                        <span data-i18n="header.updated">Оновлено:</span>
+                        <span id="last-updated-time">—</span>
+                    </span>
+                    <span class="meta-bar__countdown">
+                        <span data-i18n="header.refresh">Оновлення:</span>
+                        <span id="countdown-display">5:00</span>
+                    </span>
+                    <button
+                        id="btn-theme"
+                        class="theme-btn"
+                        aria-label="Toggle theme"
+                        title="Toggle light/dark theme"
+                    >
+                        🌙
+                    </button>
+                    <div
+                        class="lang-switcher"
+                        role="group"
+                        aria-label="Language / Мова"
+                    >
+                        <button
+                            id="btn-lang-uk"
+                            class="lang-btn lang-btn--active"
+                            aria-pressed="true"
+                            data-lang="uk"
+                        >
+                            УКР
+                        </button>
+                        <button
+                            id="btn-lang-en"
+                            class="lang-btn"
+                            aria-pressed="false"
+                            data-lang="en"
+                        >
+                            ENG
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </header>
 
-  <!-- Header / Meta Bar -->
-  <header class="meta-bar" role="banner">
-    <div class="meta-bar__inner">
-      <div class="meta-bar__title">
-        <span class="meta-bar__icon" aria-hidden="true">⚡</span>
-        <span data-i18n="header.title">Графік відключень</span>
-        <span class="meta-bar__region" data-i18n="header.region">Київська обл.</span>
-      </div>
-      <div class="meta-bar__info">
-        <span class="meta-bar__updated">
-          <span data-i18n="header.updated">Оновлено:</span>
-          <span id="last-updated-time">—</span>
-        </span>
-        <span class="meta-bar__countdown">
-          <span data-i18n="header.refresh">Оновлення:</span>
-          <span id="countdown-display">5:00</span>
-        </span>
-        <button id="btn-theme" class="theme-btn" aria-label="Toggle theme" title="Toggle light/dark theme">🌙</button>
-        <div class="lang-switcher" role="group" aria-label="Language / Мова">
-          <button id="btn-lang-uk" class="lang-btn lang-btn--active" aria-pressed="true" data-lang="uk">УКР</button>
-          <button id="btn-lang-en" class="lang-btn" aria-pressed="false" data-lang="en">ENG</button>
+        <!-- Error Banner -->
+        <div
+            id="error-banner"
+            class="error-banner"
+            role="alert"
+            aria-live="polite"
+            hidden
+        >
+            <span class="error-banner__icon" aria-hidden="true">⚠</span>
+            <span id="error-message" data-i18n="error.fetchFailed"
+                >Не вдалося завантажити дані. Показано останні відомі
+                дані.</span
+            >
         </div>
-      </div>
-    </div>
-  </header>
 
-  <!-- Error Banner -->
-  <div id="error-banner" class="error-banner" role="alert" aria-live="polite" hidden>
-    <span class="error-banner__icon" aria-hidden="true">⚠</span>
-    <span id="error-message" data-i18n="error.fetchFailed">Не вдалося завантажити дані. Показано останні відомі дані.</span>
-  </div>
+        <!-- Main content -->
+        <main class="main-layout" role="main">
+            <!-- Group 3.2 Featured Section -->
+            <section
+                class="group-section"
+                aria-labelledby="group-section-heading"
+            >
+                <div class="section-header">
+                    <h2 id="group-section-heading" class="section-title">
+                        <span data-i18n="section.group">Черга</span>
+                        <span id="group-name-display">3.2</span>
+                    </h2>
+                    <div class="tab-row">
+                        <div
+                            class="tab-group"
+                            role="tablist"
+                            aria-label="Тип даних / Data type"
+                            data-section="group"
+                        >
+                            <button
+                                class="tab-btn tab-btn--active"
+                                role="tab"
+                                aria-selected="true"
+                                data-section="group"
+                                data-type="fact"
+                                data-i18n="tabs.actual"
+                            >
+                                Фактичний
+                            </button>
+                            <button
+                                class="tab-btn"
+                                role="tab"
+                                aria-selected="false"
+                                data-section="group"
+                                data-type="preset"
+                                data-i18n="tabs.predicted"
+                            >
+                                Прогноз
+                            </button>
+                        </div>
+                        <div
+                            class="tab-group tab-group--day"
+                            role="tablist"
+                            aria-label="День / Day"
+                            data-section="group"
+                        >
+                            <button
+                                class="tab-btn tab-btn--active"
+                                role="tab"
+                                aria-selected="true"
+                                data-section="group"
+                                data-day="today"
+                                data-i18n="tabs.today"
+                            >
+                                Сьогодні
+                            </button>
+                            <button
+                                class="tab-btn tab-btn--tomorrow"
+                                role="tab"
+                                aria-selected="false"
+                                data-section="group"
+                                data-day="tomorrow"
+                                data-i18n="tabs.tomorrow"
+                            >
+                                Завтра
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <!-- Timeline list -->
+                <ul
+                    id="group-timeline"
+                    class="timeline"
+                    aria-label="Розклад по годинах"
+                    role="list"
+                >
+                    <!-- Rendered by JS -->
+                </ul>
+            </section>
 
-  <!-- Main content -->
-  <main class="main-layout" role="main">
+            <!-- Monitor Section -->
+            <section
+                class="monitor-section"
+                id="monitor-section"
+                aria-labelledby="monitor-heading"
+                hidden
+            >
+                <h2
+                    id="monitor-heading"
+                    class="section-title"
+                    data-i18n="section.monitor"
+                >
+                    Моніторинг
+                </h2>
+                <div id="monitor-grid" class="monitor-grid" role="list"></div>
+            </section>
 
-    <!-- Group 3.2 Featured Section -->
-    <section class="group-section" aria-labelledby="group-section-heading">
-      <div class="section-header">
-        <h2 id="group-section-heading" class="section-title">
-          <span data-i18n="section.group">Черга</span>
-          <span id="group-name-display">3.2</span>
-        </h2>
-        <div class="tab-row">
-          <div class="tab-group" role="tablist" aria-label="Тип даних / Data type" data-section="group">
-            <button class="tab-btn tab-btn--active" role="tab" aria-selected="true"
-                    data-section="group" data-type="fact" data-i18n="tabs.actual">Фактичний</button>
-            <button class="tab-btn" role="tab" aria-selected="false"
-                    data-section="group" data-type="preset" data-i18n="tabs.predicted">Прогноз</button>
-          </div>
-          <div class="tab-group tab-group--day" role="tablist" aria-label="День / Day" data-section="group">
-            <button class="tab-btn tab-btn--active" role="tab" aria-selected="true"
-                    data-section="group" data-day="today" data-i18n="tabs.today">Сьогодні</button>
-            <button class="tab-btn tab-btn--tomorrow" role="tab" aria-selected="false"
-                    data-section="group" data-day="tomorrow" data-i18n="tabs.tomorrow">Завтра</button>
-          </div>
-        </div>
-      </div>
-      <!-- Timeline list -->
-      <ul id="group-timeline" class="timeline" aria-label="Розклад по годинах" role="list">
-        <!-- Rendered by JS -->
-      </ul>
-    </section>
+            <!-- Overview Section -->
+            <section
+                class="overview-section"
+                aria-labelledby="overview-section-heading"
+            >
+                <div class="section-header">
+                    <h2
+                        id="overview-section-heading"
+                        class="section-title"
+                        data-i18n="section.overview"
+                    >
+                        Огляд усіх черг
+                    </h2>
+                    <div class="tab-row">
+                        <div
+                            class="tab-group"
+                            role="tablist"
+                            aria-label="Тип даних / Data type"
+                            data-section="overview"
+                        >
+                            <button
+                                class="tab-btn tab-btn--active"
+                                role="tab"
+                                aria-selected="true"
+                                data-section="overview"
+                                data-type="fact"
+                                data-i18n="tabs.actual"
+                            >
+                                Фактичний
+                            </button>
+                            <button
+                                class="tab-btn"
+                                role="tab"
+                                aria-selected="false"
+                                data-section="overview"
+                                data-type="preset"
+                                data-i18n="tabs.predicted"
+                            >
+                                Прогноз
+                            </button>
+                        </div>
+                        <div
+                            class="tab-group tab-group--day"
+                            role="tablist"
+                            aria-label="День / Day"
+                            data-section="overview"
+                        >
+                            <button
+                                class="tab-btn tab-btn--active"
+                                role="tab"
+                                aria-selected="true"
+                                data-section="overview"
+                                data-day="today"
+                                data-i18n="tabs.today"
+                            >
+                                Сьогодні
+                            </button>
+                            <button
+                                class="tab-btn tab-btn--tomorrow"
+                                role="tab"
+                                aria-selected="false"
+                                data-section="overview"
+                                data-day="tomorrow"
+                                data-i18n="tabs.tomorrow"
+                            >
+                                Завтра
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <!-- Scrollable table wrapper -->
+                <div
+                    class="overview-table-wrapper"
+                    role="region"
+                    aria-label="Таблиця всіх черг"
+                    tabindex="0"
+                >
+                    <table
+                        id="overview-table"
+                        class="overview-table"
+                        aria-label="Графік відключень усіх груп"
+                    >
+                        <thead id="overview-thead">
+                            <!-- Rendered by JS -->
+                        </thead>
+                        <tbody id="overview-tbody">
+                            <!-- Rendered by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
 
-    <!-- Monitor Section -->
-    <section class="monitor-section" id="monitor-section" aria-labelledby="monitor-heading" hidden>
-      <h2 id="monitor-heading" class="section-title" data-i18n="section.monitor">Моніторинг</h2>
-      <div id="monitor-grid" class="monitor-grid" role="list"></div>
-    </section>
+            <!-- Svitlobot Map Section -->
+            <section class="map-section" aria-labelledby="map-section-heading">
+                <h2
+                    id="map-section-heading"
+                    class="section-title"
+                    data-i18n="section.map"
+                >
+                    Мапа світла
+                </h2>
+                <div class="map-frame-wrapper">
+                    <iframe
+                        src="https://svitlobot.in.ua/map?lat=50.381667&amp;lng=30.380556&amp;zoom=15"
+                        title="Мапа СвітлоБот — актуальний стан електропостачання"
+                        class="map-frame"
+                        loading="lazy"
+                        allowfullscreen
+                    ></iframe>
+                </div>
+                <p class="map-credit">
+                    <span data-i18n="map.credit">Мапа та дані —</span>
+                    <a
+                        href="https://svitlobot.in.ua/"
+                        target="_blank"
+                        rel="noopener"
+                        >СвітлоБот</a
+                    >
+                </p>
+            </section>
+        </main>
 
-    <!-- Overview Section -->
-    <section class="overview-section" aria-labelledby="overview-section-heading">
-      <div class="section-header">
-        <h2 id="overview-section-heading" class="section-title" data-i18n="section.overview">Огляд усіх черг</h2>
-        <div class="tab-row">
-          <div class="tab-group" role="tablist" aria-label="Тип даних / Data type" data-section="overview">
-            <button class="tab-btn tab-btn--active" role="tab" aria-selected="true"
-                    data-section="overview" data-type="fact" data-i18n="tabs.actual">Фактичний</button>
-            <button class="tab-btn" role="tab" aria-selected="false"
-                    data-section="overview" data-type="preset" data-i18n="tabs.predicted">Прогноз</button>
-          </div>
-          <div class="tab-group tab-group--day" role="tablist" aria-label="День / Day" data-section="overview">
-            <button class="tab-btn tab-btn--active" role="tab" aria-selected="true"
-                    data-section="overview" data-day="today" data-i18n="tabs.today">Сьогодні</button>
-            <button class="tab-btn tab-btn--tomorrow" role="tab" aria-selected="false"
-                    data-section="overview" data-day="tomorrow" data-i18n="tabs.tomorrow">Завтра</button>
-          </div>
-        </div>
-      </div>
-      <!-- Scrollable table wrapper -->
-      <div class="overview-table-wrapper" role="region" aria-label="Таблиця всіх черг" tabindex="0">
-        <table id="overview-table" class="overview-table" aria-label="Графік відключень усіх груп">
-          <thead id="overview-thead">
-            <!-- Rendered by JS -->
-          </thead>
-          <tbody id="overview-tbody">
-            <!-- Rendered by JS -->
-          </tbody>
-        </table>
-      </div>
-    </section>
+        <!-- Footer -->
+        <footer class="site-footer" role="contentinfo">
+            <p>
+                <span data-i18n="footer.source">Джерело даних:</span>
+                <a
+                    href="https://github.com/Baskerville42/outage-data-ua"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    >outage-data-ua</a
+                >
+                &nbsp;·&nbsp;
+                <a target="_blank" href="https://icons8.com/icon/15352/sun"
+                    >Sun</a
+                >
+                icon by <a target="_blank" href="https://icons8.com">Icons8</a>
+            </p>
+        </footer>
 
-  </main>
-
-  <!-- Footer -->
-  <footer class="site-footer" role="contentinfo">
-    <p>
-      <span data-i18n="footer.source">Джерело даних:</span>
-      <a href="https://github.com/Baskerville42/outage-data-ua" target="_blank" rel="noopener noreferrer">outage-data-ua</a>
-      &nbsp;·&nbsp;
-      <a target="_blank" href="https://icons8.com/icon/15352/sun">Sun</a> icon by <a target="_blank" href="https://icons8.com">Icons8</a>
-    </p>
-  </footer>
-
-  <script src="app.js"></script>
-</body>
+        <script src="app.js"></script>
+    </body>
 </html>

@@ -61,6 +61,7 @@ const I18N = (() => {
         group: 'Черга',
         overview: 'Огляд усіх черг',
         monitor: 'Моніторинг',
+        map: 'Мапа світла',
       },
       tabs: {
         actual: 'Фактичний',
@@ -89,6 +90,9 @@ const I18N = (() => {
       footer: {
         source: 'Джерело даних:',
       },
+      map: {
+        credit: 'Мапа та дані —',
+      },
       time: {
         never: 'ніколи',
         justNow: 'щойно',
@@ -110,6 +114,7 @@ const I18N = (() => {
         group: 'Group',
         overview: 'All Groups Overview',
         monitor: 'Live monitoring',
+        map: 'Power Map',
       },
       tabs: {
         actual: 'Actual',
@@ -137,6 +142,9 @@ const I18N = (() => {
       },
       footer: {
         source: 'Data source:',
+      },
+      map: {
+        credit: 'Map and data —',
       },
       time: {
         never: 'never',

@@ -279,15 +279,16 @@ body.loading .main-layout {
 /* ============================================================
    Main Layout — CSS Grid on desktop, flex column on mobile
    Columns: [220px sidebar] [1fr content]
-   Rows:    [auto monitor ] [1fr  overview]
+   Rows:    [auto monitor ] [auto overview] [auto map]
    ============================================================ */
 .main-layout {
   display: grid;
   grid-template-columns: 220px 1fr;
-  grid-template-rows: auto 1fr;
+  grid-template-rows: auto auto auto;
   grid-template-areas:
     "sidebar monitor"
-    "sidebar overview";
+    "sidebar overview"
+    "sidebar map";
   gap: var(--section-gap);
   flex: 1;
   max-width: 1700px;
@@ -302,7 +303,8 @@ body.loading .main-layout {
    ============================================================ */
 .group-section,
 .monitor-section,
-.overview-section {
+.overview-section,
+.map-section {
   background: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
@@ -332,6 +334,34 @@ body.loading .main-layout {
   grid-area: overview;
   min-width: 0;
   overflow: hidden;
+}
+
+.map-section {
+  grid-area: map;
+  min-width: 0;
+}
+
+.map-frame-wrapper {
+  height: 600px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+  overflow: hidden;
+}
+
+.map-frame {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+.map-credit {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+
+.map-credit a {
+  color: var(--color-accent);
 }
 
 .section-header {
@@ -813,7 +843,8 @@ body.loading .main-layout {
     border-bottom: none;
   }
 
-  .overview-section {
+  .overview-section,
+  .map-section {
     width: 100%;
   }
 }
@@ -848,9 +879,12 @@ body.loading .main-layout {
   }
 
   .group-section,
-  .overview-section {
+  .overview-section,
+  .map-section {
     padding: 12px;
   }
+
+  .map-frame-wrapper { height: 480px; }
 
   .section-title {
     font-size: var(--font-size-base);
@@ -877,11 +911,15 @@ body.loading .main-layout {
   }
 
   .group-section,
-  .overview-section {
+  .overview-section,
+  .map-section {
     padding: 10px;
     border-radius: var(--radius-md);
     gap: 8px;
   }
+
+  /* Leave a strip of page visible so users can scroll past the map */
+  .map-frame-wrapper { height: min(420px, 70dvh); }
 
   .section-title {
     font-size: var(--font-size-sm);
